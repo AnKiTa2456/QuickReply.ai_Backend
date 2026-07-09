@@ -1,10 +1,11 @@
 import { Router } from "express";
 import pool from "../db/pool.js";
+import { asyncHandler } from "../asyncHandler.js";
 import { DOMAINS, READING_STAGES } from "../constants.js";
 
 const router = Router();
 
-router.get("/", async (_req, res) => {
+router.get("/", asyncHandler(async (_req, res) => {
   const [funnelResult, scatterResult, stackedResult, totalsResult, avgCitationsResult] = await Promise.all([
     pool.query(`SELECT reading_stage, COUNT(*)::int AS count FROM papers GROUP BY reading_stage`),
     pool.query(`SELECT id, title, citation_count, impact_score FROM papers`),
@@ -55,6 +56,6 @@ router.get("/", async (_req, res) => {
       fullyReadCount: fully_read,
     },
   });
-});
+}));
 
 export default router;

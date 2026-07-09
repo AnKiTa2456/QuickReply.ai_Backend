@@ -1,5 +1,6 @@
 import { Router } from "express";
 import pool from "../db/pool.js";
+import { asyncHandler } from "../asyncHandler.js";
 import { DOMAINS, READING_STAGES, IMPACT_SCORES } from "../constants.js";
 
 const router = Router();
@@ -27,7 +28,7 @@ function dateRangeToStart(range) {
   }
 }
 
-router.get("/", async (req, res) => {
+router.get("/", asyncHandler(async (req, res) => {
   const stages = toArray(req.query.readingStage);
   const domains = toArray(req.query.domain);
   const impacts = toArray(req.query.impactScore);
@@ -63,9 +64,9 @@ router.get("/", async (req, res) => {
     params
   );
   res.json(rows);
-});
+}));
 
-router.post("/", async (req, res) => {
+router.post("/", asyncHandler(async (req, res) => {
   const { title, firstAuthor, domain, readingStage, citationCount, impactScore, dateAdded } = req.body;
 
   if (!title?.trim() || !firstAuthor?.trim()) {
@@ -92,11 +93,11 @@ router.post("/", async (req, res) => {
     [title.trim(), firstAuthor.trim(), domain, readingStage, citations, impactScore, dateAdded || null]
   );
   res.status(201).json(rows[0]);
-});
+}));
 
-router.delete("/:id", async (req, res) => {
+router.delete("/:id", asyncHandler(async (req, res) => {
   await pool.query("DELETE FROM papers WHERE id = $1", [req.params.id]);
   res.status(204).end();
-});
+}));
 
 export default router;
