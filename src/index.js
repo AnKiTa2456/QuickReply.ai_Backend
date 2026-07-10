@@ -5,6 +5,12 @@ import papersRouter from "./routes/papers.js";
 import analyticsRouter from "./routes/analytics.js";
 import { DOMAINS, READING_STAGES, IMPACT_SCORES, DATE_RANGES } from "./constants.js";
 
+if (!process.env.DATABASE_URL) {
+  console.error(
+    "WARNING: DATABASE_URL is not set — DB-backed routes will fail with ECONNREFUSED to localhost."
+  );
+}
+
 const app = express();
 app.use(cors());
 app.use(express.json());

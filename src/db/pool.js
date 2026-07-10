@@ -15,4 +15,11 @@ const pool = new Pool({
   ssl: isLocalDb ? false : { rejectUnauthorized: false },
 });
 
+// pg.Pool emits 'error' for problems on idle clients (e.g. a dropped
+// connection). Node crashes the whole process if an EventEmitter's 'error'
+// event has no listener, so this must be here even though it just logs.
+pool.on("error", (err) => {
+  console.error("Unexpected error on idle Postgres client", err);
+});
+
 export default pool;
